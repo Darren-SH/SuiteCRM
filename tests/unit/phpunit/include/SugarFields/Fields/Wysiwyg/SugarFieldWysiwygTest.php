@@ -102,7 +102,7 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
 
         $mockLog->expects($this->once())
             ->method('error')
-            ->with($this->stringContains('[SugarFieldWysiwyg][getEditViewSmarty] Failed to initialize TinyMCE:'));
+            ->with($this->stringContains('[SugarFieldWysiwyg][getEditViewSmarty][tinymce_init_failed] Failed to initialize TinyMCE:'));
 
         $GLOBALS['log'] = $mockLog;
 
