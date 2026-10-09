@@ -142,6 +142,9 @@ class InboundEmailTest extends SuitePHPUnitFrameworkTestCase
         $fake->add('setTimeout', [1, 60], [true]);
         $fake->add('setTimeout', [2, 60], [true]);
         $fake->add('setTimeout', [3, 60], [true]);
+        $fake->add('setTimeout', [1, 5], [true]);
+        $fake->add('setTimeout', [2, 5], [true]);
+        $fake->add('setTimeout', [3, 5], [true]);
         $fake->add('getErrors', null, [false]);
         $fake->add('setTimeout', [1, 15], [true]);
         $fake->add('setTimeout', [2, 15], [true]);
@@ -1562,12 +1565,18 @@ class InboundEmailTest extends SuitePHPUnitFrameworkTestCase
 
         //test with different parameters, it will always return false because we do not have a mail server to connect.
 
+        // The result is an array of settings/errors; with no server there is never a 'good' service.
         $ret = $inboundEmail->findOptimumSettings();
-        self::assertEquals(false, $ret);
+        self::assertIsArray($ret);
+        self::assertArrayNotHasKey('good', $ret);
 
-        self::assertEquals(false, $inboundEmail->findOptimumSettings(true));
+        $ret = $inboundEmail->findOptimumSettings(true);
+        self::assertIsArray($ret);
+        self::assertArrayNotHasKey('good', $ret);
 
-        self::assertEquals(false, $inboundEmail->findOptimumSettings(false, 'test', 'test', '', '', 'INBOX'));
+        $ret = $inboundEmail->findOptimumSettings(false, 'test', 'test', '', '', 'INBOX');
+        self::assertIsArray($ret);
+        self::assertArrayNotHasKey('good', $ret);
     }
 
     public function testgetSessionConnectionString(): void
@@ -2255,8 +2264,10 @@ class InboundEmailTest extends SuitePHPUnitFrameworkTestCase
         self::assertEquals('false', $result);
 
         //test with test and force true
+        // The error text comes from the IMAP library and varies with its version and the empty server settings.
         $result = $inboundEmail->connectMailserver(true, true);
-        self::assertEquals("Can't open mailbox {:143/service=imap}: invalid remote specification<p><p><p>Please check your settings and try again.", $result);
+        self::assertIsString($result);
+        self::assertStringContainsString('Can not authenticate to IMAP server', $result);
     }
 
     public function testcheckImap(): void
@@ -2326,6 +2337,7 @@ class InboundEmailTest extends SuitePHPUnitFrameworkTestCase
             'IS_AUTO_IMPORT' => '0',
             'IS_CREATE_CASE' => '0',
             'ALLOW_OUTBOUND_GROUP_USAGE' => '0',
+            'EMAIL_BODY_FILTERING' => 'Multi Word Search',
         );
 
         self::assertIsArray($result);

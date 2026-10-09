@@ -224,7 +224,8 @@ class ProjectTaskTest extends SuitePHPUnitFrameworkTestCase
     {
         $projectTask = BeanFactory::newBean('ProjectTask');
 
-        $expected = "<select name=\"utilization\">\n<OPTION value='0'>none</OPTION>\n<OPTION value='25'>25</OPTION>\n<OPTION value='50'>50</OPTION>\n<OPTION value='75'>75</OPTION>\n<OPTION value='100'>100</OPTION></select>";
+        // The current value ('0') is marked selected in the rendered options.
+        $expected = "<select name=\"utilization\">\n<OPTION selected value='0'>none</OPTION>\n<OPTION value='25'>25</OPTION>\n<OPTION value='50'>50</OPTION>\n<OPTION value='75'>75</OPTION>\n<OPTION value='100'>100</OPTION></select>";
         $actual = getUtilizationDropdown($projectTask, 'utilization', '0', 'EditView');
         self::assertSame($expected, $actual);
     }

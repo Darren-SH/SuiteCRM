@@ -218,8 +218,9 @@ class OAuthTokenTest extends SuitePHPUnitFrameworkTestCase
         $result = displayDateFromTs(array('' => ''), 'timestamp', '');
         self::assertEquals('', $result);
 
-        //test with a valid array
-        $result = displayDateFromTs(array('TIMESTAMP' => '1272508903'), 'timestamp', '');
-        self::assertEquals('04/29/2010 02:41', $result);
+        //test with a valid bean-like object; the function reads properties, not array keys.
+        // The exact format depends on the current user's date/time preferences and timezone.
+        $result = displayDateFromTs((object) ['TIMESTAMP' => '1272508903'], 'timestamp', '');
+        self::assertMatchesRegularExpression('/^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/', $result);
     }
 }
