@@ -124,9 +124,9 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
         $result = $this->field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
 
         $this->assertIsString($result);
-        $this->assertArrayHasKey('tiny', $this->field->ss->_tpl_vars);
+        $this->assertNotNull($this->field->ss->getTemplateVars('tiny'));
 
-        $tinyVariable = $this->field->ss->_tpl_vars['tiny'];
+        $tinyVariable = $this->field->ss->getTemplateVars('tiny');
         $this->assertIsString($tinyVariable);
     }
 
@@ -148,8 +148,8 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
         $parentFieldArray = ['value' => 'test content'];
         $result = $this->field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
 
-        $this->assertArrayHasKey('tiny', $this->field->ss->_tpl_vars);
-        $tinyVariable = $this->field->ss->_tpl_vars['tiny'];
+        $this->assertNotNull($this->field->ss->getTemplateVars('tiny'));
+        $tinyVariable = $this->field->ss->getTemplateVars('tiny');
 
         $this->assertStringContainsString('#EditView #content', $tinyVariable);
     }
@@ -170,8 +170,8 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
         $parentFieldArray = ['value' => 'test content'];
         $result = $this->field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
 
-        $this->assertArrayHasKey('tiny', $this->field->ss->_tpl_vars);
-        $tinyVariable = $this->field->ss->_tpl_vars['tiny'];
+        $this->assertNotNull($this->field->ss->getTemplateVars('tiny'));
+        $tinyVariable = $this->field->ss->getTemplateVars('tiny');
 
         $this->assertStringContainsString('#content', $tinyVariable);
         $this->assertStringNotContainsString('#EditView #content', $tinyVariable);
@@ -195,8 +195,8 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
         $parentFieldArray = ['value' => 'test content'];
         $result = $this->field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
 
-        $this->assertArrayHasKey('tiny', $this->field->ss->_tpl_vars);
-        $tinyVariable = $this->field->ss->_tpl_vars['tiny'];
+        $this->assertNotNull($this->field->ss->getTemplateVars('tiny'));
+        $tinyVariable = $this->field->ss->getTemplateVars('tiny');
 
         $this->assertStringContainsString('<script type="text/javascript">', $tinyVariable);
         $this->assertStringContainsString('tinyConfig.selector', $tinyVariable);
@@ -221,39 +221,10 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
         $parentFieldArray = ['value' => 'test content'];
         $result = $this->field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
 
-        $this->assertArrayHasKey('tiny', $this->field->ss->_tpl_vars);
-        $tinyVariable = $this->field->ss->_tpl_vars['tiny'];
+        $this->assertNotNull($this->field->ss->getTemplateVars('tiny'));
+        $tinyVariable = $this->field->ss->getTemplateVars('tiny');
 
         $this->assertStringContainsString('tinyConfig.height = 250', $tinyVariable);
-    }
-
-    /**
-     * Test that logging occurs when loading editor
-     * Verifies the info log is written when TinyMCE is initialized
-     */
-    public function testGetEditViewSmartyLogsInfo(): void
-    {
-        $vardef = [
-            'name' => 'content',
-            'type' => 'wysiwyg'
-        ];
-
-        $displayParams = [
-            'formName' => 'EditView'
-        ];
-
-        $mockLog = $this->getMockBuilder(\LoggerManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $mockLog->expects($this->atLeastOnce())
-            ->method('info')
-            ->with($this->stringContains('[SugarFieldWysiwyg][getEditViewSmarty] Loading editor for field: content'));
-
-        $GLOBALS['log'] = $mockLog;
-
-        $parentFieldArray = ['value' => 'test content'];
-        $result = $this->field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
     }
 
     /**
@@ -288,7 +259,7 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
         $result = $this->field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
 
         $this->assertIsString($result);
-        $tinyVariable = $this->field->ss->_tpl_vars['tiny'] ?? null;
+        $tinyVariable = $this->field->ss->getTemplateVars('tiny');
         $this->assertNull($tinyVariable);
     }
 
@@ -332,9 +303,39 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
         $parentFieldArray = ['value' => 'test content'];
         $result = $this->field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
 
-        $this->assertArrayHasKey('tiny', $this->field->ss->_tpl_vars);
-        $tinyVariable = $this->field->ss->_tpl_vars['tiny'];
+        $this->assertNotNull($this->field->ss->getTemplateVars('tiny'));
+        $tinyVariable = $this->field->ss->getTemplateVars('tiny');
 
         $this->assertStringContainsString('#CustomForm #custom_wysiwyg_field', $tinyVariable);
+    }
+
+    /**
+     * Test that logging occurs when loading editor
+     * Verifies the info log is written when TinyMCE is initialized
+     */
+    public function testGetEditViewSmartyLogsInfo(): void
+    {
+        $vardef = [
+            'name' => 'content',
+            'type' => 'wysiwyg'
+        ];
+
+        $displayParams = [
+            'formName' => 'EditView'
+        ];
+
+        $mockLog = $this->getMockBuilder(\LoggerManager::class)
+            ->disableOriginalConstructor()
+            ->addMethods(['info'])
+            ->getMock();
+
+        $mockLog->expects($this->atLeastOnce())
+            ->method('info')
+            ->with($this->stringContains('[SugarFieldWysiwyg][getEditViewSmarty] Loading editor for field: content'));
+
+        $GLOBALS['log'] = $mockLog;
+
+        $parentFieldArray = ['value' => 'test content'];
+        $result = $this->field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
     }
 }

@@ -298,6 +298,10 @@ class SugarFieldTextTest extends SuitePHPUnitFrameworkTestCase
      * Test that logging occurs when loading HTML editor
      * Verifies the info log is written when TinyMCE is initialized
      */
+    /**
+     * Test that logging occurs when loading HTML editor
+     * Verifies the info log is written when TinyMCE is initialized
+     */
     public function testSetupLogsInfoWhenLoadingHTMLEditor(): void
     {
         $vardef = [
@@ -314,6 +318,7 @@ class SugarFieldTextTest extends SuitePHPUnitFrameworkTestCase
 
         $mockLog = $this->getMockBuilder(\LoggerManager::class)
             ->disableOriginalConstructor()
+            ->addMethods(['info'])
             ->getMock();
 
         $mockLog->expects($this->atLeastOnce())
