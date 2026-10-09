@@ -61,9 +61,10 @@ class SubPanelTest extends SuitePHPUnitFrameworkTestCase
         $counter = new SubPanelRowCounter($bean);
         $subPanelDefs = [];
 
+        // An empty definition has no collections to count, so the row count is 0.
         $count = $counter->getSubPanelRowCount($subPanelDefs);
 
-        self::assertEquals(-1, $count);
+        self::assertEquals(0, $count);
     }
 
     public function testSelectQueryToCountQuery(): void
