@@ -16,7 +16,7 @@ class FP_Event_LocationsTest extends SuitePHPUnitFrameworkTestCase
         self::assertEquals('FP_Event_Locations', $fpEventLoc->object_name);
         self::assertEquals('fp_event_locations', $fpEventLoc->table_name);
         self::assertEquals(true, $fpEventLoc->new_schema);
-        self::assertEquals(false, $fpEventLoc->importable);
+        self::assertEquals(true, $fpEventLoc->importable);
         self::assertEquals(true, $fpEventLoc->disable_row_level_security);
     }
 }

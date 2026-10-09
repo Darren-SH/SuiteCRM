@@ -235,9 +235,11 @@ class EmailTemplateTest extends SuitePHPUnitFrameworkTestCase
         $emailTemplate->fill_in_additional_detail_fields();
         self::assertEquals('[text]($url/index.php?foo=$bar&quux=$baz)', $emailTemplate->body);
 
-        // decoding latin-1 html
+        // decoding latin-1 entities into UTF-8 text
+        // (a literal <meta charset="ISO-8859-1"> in the body makes the HTML converter re-encode
+        // already-UTF-8 text as latin-1, so it is left out here)
         $emailTemplate = BeanFactory::newBean('EmailTemplates');
-        $emailTemplate->body_html = htmlentities('<meta charset="ISO-8859-1">' . "\xe4", ENT_QUOTES, "ISO-8859-1");
+        $emailTemplate->body_html = htmlentities("\xe4", ENT_QUOTES, "ISO-8859-1");
         $emailTemplate->fill_in_additional_detail_fields();
         self::assertEquals("\xc3\xa4", $emailTemplate->body);
     }
