@@ -347,6 +347,7 @@ class file_utilsTest extends SuitePHPUnitFrameworkTestCase
             'include/MVC/View/views/view.detail.config.php',
             'include/MVC/View/views/view.detail.php',
             'include/MVC/View/views/view.edit.php',
+            'include/MVC/View/views/view.errors.php',
             'include/MVC/View/views/view.favorites.php',
             'include/MVC/View/views/view.html.php',
             'include/MVC/View/views/view.importvcard.php',
