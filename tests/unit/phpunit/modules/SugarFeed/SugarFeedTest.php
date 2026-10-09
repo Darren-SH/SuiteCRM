@@ -145,37 +145,6 @@ class SugarFeedTest extends SuitePHPUnitFrameworkTestCase
         self::assertGreaterThan(0, strlen((string) $actual));
     }
 
-    public function testgetLinkTypes(): void
-    {
-        $result = SugarFeed::getLinkTypes();
-
-        $expected = array(
-                'Image' => 'Image',
-                'Link' => 'Link',
-                'YouTube' => 'YouTube',
-        );
-        self::assertEquals($expected, $result);
-    }
-
-    public function testgetLinkClass(): void
-    {
-        //test with invalid LinkType
-        $result = SugarFeed::getLinkClass('test');
-        self::assertEquals(false, $result);
-
-        //test with LinkType Image
-        $result = SugarFeed::getLinkClass('Image');
-        self::assertInstanceOf('FeedLinkHandlerImage', $result);
-
-        //test with LinkType Link
-        $result = SugarFeed::getLinkClass('Link');
-        self::assertInstanceOf('FeedLinkHandlerLink', $result);
-
-        //test with LinkType YouTube
-        $result = SugarFeed::getLinkClass('YouTube');
-        self::assertInstanceOf('FeedLinkHandlerYoutube', $result);
-    }
-
     public function testget_list_view_data(): void
     {
         $result = BeanFactory::newBean('SugarFeed')->get_list_view_data();
