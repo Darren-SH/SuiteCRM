@@ -526,7 +526,9 @@ class SugarEmailAddress extends SugarBean
         $this->addresses = $this->getAddressesByGUID($bean->id, $module_dir);
         $this->populateLegacyFields($bean);
 
-        if (empty($bean->fetched_row)){
+        // empty(false) is true, so a bean with no fetched row (false) and an email must still be
+        // populated; only skip when there is nothing to add.
+        if (empty($bean->fetched_row) && !isset($bean->email1)) {
             return;
         }
 

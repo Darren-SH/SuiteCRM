@@ -96,7 +96,7 @@ class SubPanelRowCounter
     private function doGetSubPanelRowCount($subPanelDef)
     {
         if (!isset($subPanelDef['get_subpanel_data'])) {
-            foreach ($subPanelDef['collection_list'] as $subSubPanelDef) {
+            foreach ($subPanelDef['collection_list'] ?? [] as $subSubPanelDef) {
                 $subPanelRowCount = $this->doGetSubPanelRowCount($subSubPanelDef);
                 if ($subPanelRowCount) {
                     return $subPanelRowCount;
