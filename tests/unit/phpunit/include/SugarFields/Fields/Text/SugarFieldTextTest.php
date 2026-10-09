@@ -46,8 +46,9 @@ if (!defined('sugarEntry') || !sugarEntry) {
 use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 use SugarFieldText;
 use SugarTinyMCE;
+use SuiteCRM\Test\TestLogger;
 
-require_once __DIR__ . '/../../../../../../../../include/SugarFields/Fields/Text/SugarFieldText.php';
+require_once __DIR__ . '/../../../../../../../include/SugarFields/Fields/Text/SugarFieldText.php';
 
 /**
  * Class SugarFieldTextTest
@@ -93,27 +94,21 @@ class SugarFieldTextTest extends SuitePHPUnitFrameworkTestCase
 
         $_REQUEST['action'] = 'EditView';
 
-        $mockTinyMCE = $this->getMockBuilder(SugarTinyMCE::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $mockTinyMCE->method('getConfig')
-            ->willThrowException(new \RuntimeException('TinyMCE configuration file missing'));
-
-        $mockLog = $this->getMockBuilder(\LoggerManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $mockLog->expects($this->once())
-            ->method('error')
-            ->with($this->stringContains('[SugarFieldText][setup] Failed to initialize TinyMCE:'));
-
-        $GLOBALS['log'] = $mockLog;
+        // Records every log call so the test can inspect them
+        $logger = new TestLogger();
+        $GLOBALS['log'] = $logger;
 
         $parentFieldArray = ['value' => 'test content'];
         $this->field->setup($parentFieldArray, $vardef, $displayParams, 1);
 
-        $tinyMCEVariable = $this->field->ss->_tpl_vars['tinymce'] ?? '';
+        $errors = $logger->calls['error'] ?? [];
+        $this->assertCount(1, $errors);
+        $this->assertStringContainsString(
+            '[SugarFieldText][setup][tinymce_init_failed] Failed to initialize TinyMCE:',
+            $errors[0][0]
+        );
+
+        $tinyMCEVariable = $this->field->ss->getTemplateVars('tinymce') ?? '';
         $this->assertEquals('', $tinyMCEVariable);
     }
 
@@ -138,8 +133,8 @@ class SugarFieldTextTest extends SuitePHPUnitFrameworkTestCase
         $parentFieldArray = ['value' => 'test content'];
         $this->field->setup($parentFieldArray, $vardef, $displayParams, 1);
 
-        $this->assertArrayHasKey('tinymce', $this->field->ss->_tpl_vars);
-        $tinyMCEVariable = $this->field->ss->_tpl_vars['tinymce'];
+        $this->assertNotNull($this->field->ss->getTemplateVars('tinymce'));
+        $tinyMCEVariable = $this->field->ss->getTemplateVars('tinymce');
 
         $this->assertIsString($tinyMCEVariable);
     }
@@ -165,7 +160,7 @@ class SugarFieldTextTest extends SuitePHPUnitFrameworkTestCase
         $parentFieldArray = ['value' => 'test content'];
         $this->field->setup($parentFieldArray, $vardef, $displayParams, 1);
 
-        $tinyMCEVariable = $this->field->ss->_tpl_vars['tinymce'] ?? '';
+        $tinyMCEVariable = $this->field->ss->getTemplateVars('tinymce') ?? '';
         $this->assertEquals('', $tinyMCEVariable);
     }
 
@@ -190,7 +185,7 @@ class SugarFieldTextTest extends SuitePHPUnitFrameworkTestCase
         $parentFieldArray = ['value' => 'test content'];
         $this->field->setup($parentFieldArray, $vardef, $displayParams, 1);
 
-        $tinyMCEVariable = $this->field->ss->_tpl_vars['tinymce'] ?? '';
+        $tinyMCEVariable = $this->field->ss->getTemplateVars('tinymce') ?? '';
         $this->assertEquals('', $tinyMCEVariable);
     }
 
@@ -215,7 +210,7 @@ class SugarFieldTextTest extends SuitePHPUnitFrameworkTestCase
         $parentFieldArray = ['value' => 'test content'];
         $this->field->setup($parentFieldArray, $vardef, $displayParams, 1);
 
-        $tinyMCEVariable = $this->field->ss->_tpl_vars['tinymce'] ?? '';
+        $tinyMCEVariable = $this->field->ss->getTemplateVars('tinymce') ?? '';
         $this->assertEquals('', $tinyMCEVariable);
     }
 
@@ -240,8 +235,8 @@ class SugarFieldTextTest extends SuitePHPUnitFrameworkTestCase
         $parentFieldArray = ['value' => 'test content'];
         $this->field->setup($parentFieldArray, $vardef, $displayParams, 1);
 
-        $this->assertArrayHasKey('tinymce', $this->field->ss->_tpl_vars);
-        $tinyMCEVariable = $this->field->ss->_tpl_vars['tinymce'];
+        $this->assertNotNull($this->field->ss->getTemplateVars('tinymce'));
+        $tinyMCEVariable = $this->field->ss->getTemplateVars('tinymce');
 
         $this->assertStringContainsString('#EditView #description', $tinyMCEVariable);
     }
@@ -265,8 +260,8 @@ class SugarFieldTextTest extends SuitePHPUnitFrameworkTestCase
         $parentFieldArray = ['value' => 'test content'];
         $this->field->setup($parentFieldArray, $vardef, $displayParams, 1);
 
-        $this->assertArrayHasKey('tinymce', $this->field->ss->_tpl_vars);
-        $tinyMCEVariable = $this->field->ss->_tpl_vars['tinymce'];
+        $this->assertNotNull($this->field->ss->getTemplateVars('tinymce'));
+        $tinyMCEVariable = $this->field->ss->getTemplateVars('tinymce');
 
         $this->assertStringContainsString('#description', $tinyMCEVariable);
         $this->assertStringNotContainsString('#EditView #description', $tinyMCEVariable);
@@ -293,8 +288,8 @@ class SugarFieldTextTest extends SuitePHPUnitFrameworkTestCase
         $parentFieldArray = ['value' => 'test content'];
         $this->field->setup($parentFieldArray, $vardef, $displayParams, 1);
 
-        $this->assertArrayHasKey('tinymce', $this->field->ss->_tpl_vars);
-        $tinyMCEVariable = $this->field->ss->_tpl_vars['tinymce'];
+        $this->assertNotNull($this->field->ss->getTemplateVars('tinymce'));
+        $tinyMCEVariable = $this->field->ss->getTemplateVars('tinymce');
 
         $this->assertStringContainsString('tinyConfig.height = 250', $tinyMCEVariable);
     }

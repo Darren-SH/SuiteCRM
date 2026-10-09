@@ -53,8 +53,7 @@ class EmailTemplateTest extends SuitePHPUnitFrameworkTestCase
     {
         global $current_user;
 
-        $this->setOutputCallback(function ($msg) {
-        });
+        ob_start();
 
         $current_user->id = create_guid();
         $_REQUEST['func'] = 'createCopy';
@@ -63,7 +62,9 @@ class EmailTemplateTest extends SuitePHPUnitFrameworkTestCase
         $_POST['body_html'] = 'BodyHTML';
         require('modules/EmailTemplates/EmailTemplateData.php');
 
-        $output = json_decode($this->getActualOutput(), true, 512, JSON_THROW_ON_ERROR);
+        $actualOutput = ob_get_clean();
+
+        $output = json_decode($actualOutput, true, 512, JSON_THROW_ON_ERROR);
         self::assertNotEmpty($output['data']);
         self::assertNotEmpty($output['data']['id']);
         $template = BeanFactory::newBean('EmailTemplates');

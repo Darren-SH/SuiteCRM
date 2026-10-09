@@ -47,7 +47,7 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 use SugarFieldWysiwyg;
 use SugarTinyMCE;
 
-require_once __DIR__ . '/../../../../../../../../include/SugarFields/Fields/Wysiwyg/SugarFieldWysiwyg.php';
+require_once __DIR__ . '/../../../../../../../include/SugarFields/Fields/Wysiwyg/SugarFieldWysiwyg.php';
 
 /**
  * Class SugarFieldWysiwygTest

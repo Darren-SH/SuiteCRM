@@ -101,8 +101,7 @@ class SugarControllerTest extends SuitePHPUnitFrameworkTestCase
     public function testexecute(): void
     {
         // suppress output during the test
-        $this->setOutputCallback(function () {
-        });
+        ob_start();
 
         // test
         $SugarController = new SugarController();
@@ -121,6 +120,7 @@ class SugarControllerTest extends SuitePHPUnitFrameworkTestCase
         // change back to original logger
         $testLogger = $GLOBALS['log'];
         $GLOBALS['log'] = $logger;
+        ob_end_clean();
 
         // exam log
         self::assertTrue(true);
