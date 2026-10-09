@@ -4,13 +4,25 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class GroupTest extends SuitePHPUnitFrameworkTestCase
 {
+    /** @var mixed */
+    private $originalCurrentUser;
+
     protected function setUp(): void
     {
         parent::setUp();
 
         global $current_user;
+        $this->originalCurrentUser = $current_user ?? null;
+        // create_export_query() requires an admin user.
         $current_user = BeanFactory::newBean('Users');
+        $current_user->is_admin = '1';
         get_sugar_config_defaults();
+    }
+
+    protected function tearDown(): void
+    {
+        $GLOBALS['current_user'] = $this->originalCurrentUser;
+        parent::tearDown();
     }
 
     public function testGroup(): void

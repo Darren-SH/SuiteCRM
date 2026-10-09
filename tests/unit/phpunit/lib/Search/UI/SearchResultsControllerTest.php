@@ -76,7 +76,7 @@ class SearchResultsControllerTest extends SuitePHPUnitFrameworkTestCase
         ];
         $query = SearchQuery::fromRequestArray($request);
         $hits = [
-            'Accounts' => $ids,
+            'Accounts' => ['results' => $ids],
         ];
         $groupedByModule = true;
         $searchTime = 0.05;
@@ -110,7 +110,7 @@ class SearchResultsControllerTest extends SuitePHPUnitFrameworkTestCase
         ];
         $query = SearchQuery::fromRequestArray($request);
         $hits = [
-            'Accounts' => $ids,
+            'Accounts' => ['results' => $ids],
         ];
         $groupedByModule = true;
         $searchTime = 0.05;
@@ -142,7 +142,7 @@ class SearchResultsControllerTest extends SuitePHPUnitFrameworkTestCase
         ];
         $query = SearchQuery::fromRequestArray($request);
         $hits = [
-            'Accounts' => [$account->id],
+            'Accounts' => ['results' => [$account->id]],
         ];
         $groupedByModule = true;
         $searchTime = 0.05;
