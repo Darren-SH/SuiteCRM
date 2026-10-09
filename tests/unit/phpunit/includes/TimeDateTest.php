@@ -47,11 +47,38 @@ use UserPreference;
 
 class TimeDateTest extends SuitePHPUnitFrameworkTestCase
 {
+    /** @var mixed */
+    private $originalCurrentUser;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->originalCurrentUser = $GLOBALS['current_user'] ?? null;
+    }
+
+    protected function tearDown(): void
+    {
+        $GLOBALS['current_user'] = $this->originalCurrentUser;
+        parent::tearDown();
+    }
+
+    /**
+     * Loads user 1 and makes it the current user. UserPreference::getPreference()
+     * only reads the session cache that setPreference() writes to for the current user.
+     */
+    private function loadTestUser()
+    {
+        $user = BeanFactory::newBean('Users');
+        $user->retrieve('1');
+        $GLOBALS['current_user'] = $user;
+
+        return $user;
+    }
+
     public function testget_date_format(): void
     {
         // Validate that it gets the date format from the user's preferences.
-        $user = BeanFactory::newBean('Users');
-        $user->retrieve('1');
+        $user = $this->loadTestUser();
         $userPreference = new UserPreference($user);
         $userPreference->setPreference('datef', 'Y-m-d');
 
@@ -63,8 +90,7 @@ class TimeDateTest extends SuitePHPUnitFrameworkTestCase
     public function testget_time_format(): void
     {
         // Validate that it gets the time format from the user's preferences.
-        $user = BeanFactory::newBean('Users');
-        $user->retrieve('1');
+        $user = $this->loadTestUser();
         $userPreference = new UserPreference($user);
         $userPreference->setPreference('timef', 'H:i:s');
 
@@ -76,8 +102,7 @@ class TimeDateTest extends SuitePHPUnitFrameworkTestCase
     public function testget_date_time_format(): void
     {
         // Validate that it gets the date time format from the user's preferences.
-        $user = BeanFactory::newBean('Users');
-        $user->retrieve('1');
+        $user = $this->loadTestUser();
         $userPreference = new UserPreference($user);
         $userPreference->setPreference('datef', 'Y-m-d');
         $userPreference->setPreference('timef', 'H:i:s');
@@ -91,8 +116,7 @@ class TimeDateTest extends SuitePHPUnitFrameworkTestCase
     {
         // Validate that it gets the first day of the week from the user's
         // preferences.
-        $user = BeanFactory::newBean('Users');
-        $user->retrieve('1');
+        $user = $this->loadTestUser();
         $userPreference = new UserPreference($user);
         $userPreference->setPreference('fdow', 1);
 
@@ -140,8 +164,7 @@ class TimeDateTest extends SuitePHPUnitFrameworkTestCase
     {
         // Test that the function returns the time but not the date, even if
         // a date is provided.
-        $user = BeanFactory::newBean('Users');
-        $user->retrieve('1');
+        $user = $this->loadTestUser();
         $userPreference = new UserPreference($user);
         $userPreference->setPreference('datef', 'Y-m-d');
         $userPreference->setPreference('timef', 'H:i:s');
@@ -163,8 +186,7 @@ class TimeDateTest extends SuitePHPUnitFrameworkTestCase
         // We create a user here, but it doesn't actually take the user's
         // preferences into account. This should probably be fixed at some
         // point.
-        $user = BeanFactory::newBean('Users');
-        $user->retrieve('1');
+        $user = $this->loadTestUser();
         $userPreference = new UserPreference($user);
         $userPreference->setPreference('datef', 'Y-m-d');
         $userPreference->setPreference('timef', 'H:i:s');
