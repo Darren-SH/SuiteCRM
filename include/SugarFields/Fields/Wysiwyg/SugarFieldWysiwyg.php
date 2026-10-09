@@ -64,6 +64,8 @@ class SugarFieldWysiwyg extends SugarFieldBase {
             $form_name = $this->ss->_tpl_vars['displayParams']['formName'];
         }
 
+        $log?->info("[SugarFieldWysiwyg][getEditViewSmarty] Loading editor for field: $vardefName");
+
         try {
             $tiny = new SugarTinyMCE();
             $tinyConfigJs = $tiny->getConfig();

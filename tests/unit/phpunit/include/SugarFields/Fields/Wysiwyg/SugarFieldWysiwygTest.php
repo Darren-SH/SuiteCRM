@@ -308,4 +308,34 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
 
         $this->assertStringContainsString('#CustomForm #custom_wysiwyg_field', $tinyVariable);
     }
+
+    /**
+     * Test that logging occurs when loading editor
+     * Verifies the info log is written when TinyMCE is initialized
+     */
+    public function testGetEditViewSmartyLogsInfo(): void
+    {
+        $vardef = [
+            'name' => 'content',
+            'type' => 'wysiwyg'
+        ];
+
+        $displayParams = [
+            'formName' => 'EditView'
+        ];
+
+        $mockLog = $this->getMockBuilder(\LoggerManager::class)
+            ->disableOriginalConstructor()
+            ->addMethods(['info'])
+            ->getMock();
+
+        $mockLog->expects($this->atLeastOnce())
+            ->method('info')
+            ->with($this->stringContains('[SugarFieldWysiwyg][getEditViewSmarty] Loading editor for field: content'));
+
+        $GLOBALS['log'] = $mockLog;
+
+        $parentFieldArray = ['value' => 'test content'];
+        $result = $this->field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
+    }
 }

@@ -113,6 +113,8 @@ class SugarFieldText extends SugarFieldBase
                     $form_name = $this->ss->_tpl_vars['displayParams']['formName'];
                 }
 
+                $log?->info("[SugarFieldText][setup] Loading HTML editor for field: $vardefName");
+
                 try {
                     $tiny = new SugarTinyMCE();
                     $tinyConfigJs = $tiny->getConfig();
