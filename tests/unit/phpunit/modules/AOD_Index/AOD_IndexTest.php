@@ -4,6 +4,27 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class AOD_IndexTest extends SuitePHPUnitFrameworkTestCase
 {
+    /** @var mixed */
+    private $originalAodConfig;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // AOD is an admin option; these tests expect it enabled.
+        $this->originalAodConfig = $GLOBALS['sugar_config']['aod'] ?? null;
+        $GLOBALS['sugar_config']['aod']['enable_aod'] = true;
+    }
+
+    protected function tearDown(): void
+    {
+        if ($this->originalAodConfig === null) {
+            unset($GLOBALS['sugar_config']['aod']);
+        } else {
+            $GLOBALS['sugar_config']['aod'] = $this->originalAodConfig;
+        }
+        parent::tearDown();
+    }
+
     public function testAOD_Index(): void
     {
         // Execute the constructor and check for the Object type and type attribute
