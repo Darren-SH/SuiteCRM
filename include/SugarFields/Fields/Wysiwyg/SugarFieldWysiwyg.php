@@ -67,7 +67,7 @@ class SugarFieldWysiwyg extends SugarFieldBase {
         $log?->info("[SugarFieldWysiwyg][getEditViewSmarty] Loading editor for field: $vardefName");
 
         try {
-            $tiny = new SugarTinyMCE();
+            $tiny = $this->createTinyMCE();
             $tinyConfigJs = $tiny->getConfig();
 
             $selector = "";
@@ -88,5 +88,10 @@ class SugarFieldWysiwyg extends SugarFieldBase {
         }
 
         return parent::getEditViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex);
+    }
+
+    protected function createTinyMCE(): SugarTinyMCE
+    {
+        return new SugarTinyMCE();
     }
 }

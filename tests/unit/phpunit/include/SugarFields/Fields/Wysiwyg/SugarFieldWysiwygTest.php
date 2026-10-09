@@ -89,8 +89,15 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
         $mockTinyMCE->method('getConfig')
             ->willThrowException(new \RuntimeException('TinyMCE configuration file missing'));
 
+        $field = $this->getMockBuilder(SugarFieldWysiwyg::class)
+            ->setConstructorArgs(['wysiwyg'])
+            ->onlyMethods(['createTinyMCE'])
+            ->getMock();
+        $field->method('createTinyMCE')->willReturn($mockTinyMCE);
+
         $mockLog = $this->getMockBuilder(\LoggerManager::class)
             ->disableOriginalConstructor()
+            ->addMethods(['error'])
             ->getMock();
 
         $mockLog->expects($this->once())
@@ -100,7 +107,7 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
         $GLOBALS['log'] = $mockLog;
 
         $parentFieldArray = ['value' => 'test content'];
-        $result = $this->field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
+        $result = $field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
 
         $this->assertIsString($result);
     }
@@ -249,17 +256,24 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
         $mockTinyMCE->method('getConfig')
             ->willThrowException(new \RuntimeException('Configuration error'));
 
+        $field = $this->getMockBuilder(SugarFieldWysiwyg::class)
+            ->setConstructorArgs(['wysiwyg'])
+            ->onlyMethods(['createTinyMCE'])
+            ->getMock();
+        $field->method('createTinyMCE')->willReturn($mockTinyMCE);
+
         $mockLog = $this->getMockBuilder(\LoggerManager::class)
             ->disableOriginalConstructor()
+            ->addMethods(['error'])
             ->getMock();
 
         $GLOBALS['log'] = $mockLog;
 
         $parentFieldArray = ['value' => 'test content'];
-        $result = $this->field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
+        $result = $field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
 
         $this->assertIsString($result);
-        $tinyVariable = $this->field->ss->getTemplateVars('tiny');
+        $tinyVariable = $field->ss->getTemplateVars('tiny');
         $this->assertNull($tinyVariable);
     }
 
@@ -329,13 +343,22 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
             ->addMethods(['info'])
             ->getMock();
 
-        $mockLog->expects($this->atLeastOnce())
-            ->method('info')
-            ->with($this->stringContains('[SugarFieldWysiwyg][getEditViewSmarty] Loading editor for field: content'));
+        // SugarTinyMCE also logs through info(), so collect every message and check for ours
+        $infoMessages = [];
+        $mockLog->method('info')->willReturnCallback(static function ($message) use (&$infoMessages): void {
+            $infoMessages[] = $message;
+        });
 
         $GLOBALS['log'] = $mockLog;
 
         $parentFieldArray = ['value' => 'test content'];
         $result = $this->field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
+
+        $this->assertTrue(
+            array_filter(
+                $infoMessages,
+                static fn($message): bool => str_contains($message, '[SugarFieldWysiwyg][getEditViewSmarty] Loading editor for field: content')
+            ) !== []
+        );
     }
 }
