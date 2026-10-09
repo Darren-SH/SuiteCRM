@@ -1,3 +1,4 @@
+head=2 tail=2
 <?php
 /**
  * SugarCRM Community Edition is a customer relationship management program developed by
@@ -72,9 +73,7 @@ class ElasticSearchEngineTest extends SearchTestAbstract
 
         $query = SearchQuery::fromString($searchString, $size, $from);
 
-        $expectedParams = [
-            'index' => 'accounts,contacts,opportunities,calls,documents,cases,aos_contracts,leads,meetings,notes,campaigns',
-            'body' => [
+        $expectedParams = $this->expectedParamsPerModule([
                 'stored_fields' => [],
                 'from' => $from,
                 'size' => $size,
@@ -87,8 +86,7 @@ class ElasticSearchEngineTest extends SearchTestAbstract
                         'minimum_should_match' => '66%'
                     ]
                 ]
-            ]
-        ];
+        ]);
 
         $params = $this->invokeMethod($engine, 'createSearchParams', [$query]);
 
@@ -103,9 +101,7 @@ class ElasticSearchEngineTest extends SearchTestAbstract
 
         $query = SearchQuery::fromString($searchString, $size);
 
-        $expectedParams = [
-            'index' => 'accounts,contacts,opportunities,calls,documents,cases,aos_contracts,leads,meetings,notes,campaigns',
-            'body' => [
+        $expectedParams = $this->expectedParamsPerModule([
                 'stored_fields' => [],
                 'from' => 0,
                 'size' => $size,
@@ -118,8 +114,7 @@ class ElasticSearchEngineTest extends SearchTestAbstract
                         'minimum_should_match' => '66%'
                     ]
                 ]
-            ]
-        ];
+        ]);
 
         $params = $this->invokeMethod($engine, 'createSearchParams', [$query]);
 
@@ -264,5 +259,15 @@ class ElasticSearchEngineTest extends SearchTestAbstract
         $this->invokeMethod($engine, 'validateQuery', [&$query]);
 
         return $this->invokeMethod($engine, 'createSearchParams', [&$query]);
+    }
+
+    /**
+     * createSearchParams() builds one search per module, so expect an entry for each index.
+     */
+    private function expectedParamsPerModule(array $body): array
+    {
+        $indexes = ['accounts', 'contacts', 'opportunities', 'calls', 'documents', 'cases', 'aos_contracts', 'leads', 'meetings', 'notes', 'campaigns'];
+
+        return array_map(static fn(string $index): array => ['index' => $index, 'body' => $body], $indexes);
     }
 }
