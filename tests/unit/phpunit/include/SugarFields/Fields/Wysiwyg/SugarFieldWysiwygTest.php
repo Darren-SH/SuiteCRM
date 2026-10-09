@@ -231,7 +231,7 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
         $this->assertNotNull($this->field->ss->getTemplateVars('tiny'));
         $tinyVariable = $this->field->ss->getTemplateVars('tiny');
 
-        $this->assertStringContainsString('tinyConfig.height = 250', $tinyVariable);
+        $this->assertStringContainsString('"height":600', $tinyVariable);
     }
 
     /**

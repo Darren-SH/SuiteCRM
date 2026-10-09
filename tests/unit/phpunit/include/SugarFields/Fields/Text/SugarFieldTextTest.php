@@ -303,7 +303,7 @@ class SugarFieldTextTest extends SuitePHPUnitFrameworkTestCase
         $this->assertNotNull($this->field->ss->getTemplateVars('tinymce'));
         $tinyMCEVariable = $this->field->ss->getTemplateVars('tinymce');
 
-        $this->assertStringContainsString('tinyConfig.height = 250', $tinyMCEVariable);
+        $this->assertStringContainsString('"height":600', $tinyMCEVariable);
     }
 
     /**
