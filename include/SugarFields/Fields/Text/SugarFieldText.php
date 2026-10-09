@@ -116,7 +116,7 @@ class SugarFieldText extends SugarFieldBase
                 $log?->info("[SugarFieldText][setup] Loading HTML editor for field: $vardefName");
 
                 try {
-                    $tiny = new SugarTinyMCE();
+                    $tiny = $this->createTinyMCE();
                     $tinyConfigJs = $tiny->getConfig();
 
                     $selector = "";
@@ -137,5 +137,10 @@ class SugarFieldText extends SugarFieldBase
         }
 
         $this->ss->assign("tinymce", $initiate);
+    }
+
+    protected function createTinyMCE(): SugarTinyMCE
+    {
+        return new SugarTinyMCE();
     }
 }

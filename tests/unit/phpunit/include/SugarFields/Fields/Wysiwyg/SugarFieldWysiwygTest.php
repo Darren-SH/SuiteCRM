@@ -89,8 +89,15 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
         $mockTinyMCE->method('getConfig')
             ->willThrowException(new \RuntimeException('TinyMCE configuration file missing'));
 
+        $field = $this->getMockBuilder(SugarFieldWysiwyg::class)
+            ->setConstructorArgs(['wysiwyg'])
+            ->onlyMethods(['createTinyMCE'])
+            ->getMock();
+        $field->method('createTinyMCE')->willReturn($mockTinyMCE);
+
         $mockLog = $this->getMockBuilder(\LoggerManager::class)
             ->disableOriginalConstructor()
+            ->addMethods(['error'])
             ->getMock();
 
         $mockLog->expects($this->once())
@@ -100,7 +107,7 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
         $GLOBALS['log'] = $mockLog;
 
         $parentFieldArray = ['value' => 'test content'];
-        $result = $this->field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
+        $result = $field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
 
         $this->assertIsString($result);
     }
@@ -249,17 +256,24 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
         $mockTinyMCE->method('getConfig')
             ->willThrowException(new \RuntimeException('Configuration error'));
 
+        $field = $this->getMockBuilder(SugarFieldWysiwyg::class)
+            ->setConstructorArgs(['wysiwyg'])
+            ->onlyMethods(['createTinyMCE'])
+            ->getMock();
+        $field->method('createTinyMCE')->willReturn($mockTinyMCE);
+
         $mockLog = $this->getMockBuilder(\LoggerManager::class)
             ->disableOriginalConstructor()
+            ->addMethods(['error'])
             ->getMock();
 
         $GLOBALS['log'] = $mockLog;
 
         $parentFieldArray = ['value' => 'test content'];
-        $result = $this->field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
+        $result = $field->getEditViewSmarty($parentFieldArray, $vardef, $displayParams, 1);
 
         $this->assertIsString($result);
-        $tinyVariable = $this->field->ss->getTemplateVars('tiny');
+        $tinyVariable = $field->ss->getTemplateVars('tiny');
         $this->assertNull($tinyVariable);
     }
 
