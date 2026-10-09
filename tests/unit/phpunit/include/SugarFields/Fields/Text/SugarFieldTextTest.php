@@ -321,13 +321,22 @@ class SugarFieldTextTest extends SuitePHPUnitFrameworkTestCase
             ->addMethods(['info'])
             ->getMock();
 
-        $mockLog->expects($this->atLeastOnce())
-            ->method('info')
-            ->with($this->stringContains('[SugarFieldText][setup] Loading HTML editor for field: description'));
+        // SugarTinyMCE also logs through info(), so collect every message and check for ours
+        $infoMessages = [];
+        $mockLog->method('info')->willReturnCallback(static function ($message) use (&$infoMessages): void {
+            $infoMessages[] = $message;
+        });
 
         $GLOBALS['log'] = $mockLog;
 
         $parentFieldArray = ['value' => 'test content'];
         $this->field->setup($parentFieldArray, $vardef, $displayParams, 1);
+
+        $this->assertTrue(
+            array_filter(
+                $infoMessages,
+                static fn($message): bool => str_contains($message, '[SugarFieldText][setup] Loading HTML editor for field: description')
+            ) !== []
+        );
     }
 }
