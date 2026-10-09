@@ -71,7 +71,7 @@ class ElasticSearchEngineTest extends SearchTestAbstract
         $size = 30;
         $from = 5;
 
-        $query = SearchQuery::fromString($searchString, $size, $from);
+        $query = SearchQuery::fromString($searchString, $size, $from, null, [], $this->searchModules());
 
         $expectedParams = $this->expectedParamsPerModule([
                 'stored_fields' => [],
@@ -99,7 +99,7 @@ class ElasticSearchEngineTest extends SearchTestAbstract
         $searchString = "test*";
         $size = 30;
 
-        $query = SearchQuery::fromString($searchString, $size);
+        $query = SearchQuery::fromString($searchString, $size, 0, null, [], $this->searchModules());
 
         $expectedParams = $this->expectedParamsPerModule([
                 'stored_fields' => [],
@@ -262,11 +262,20 @@ class ElasticSearchEngineTest extends SearchTestAbstract
     }
 
     /**
+     * Passed explicitly to SearchQuery so the expected indexes don't depend on the
+     * environment's enabled search modules.
+     */
+    private function searchModules(): array
+    {
+        return ['Accounts', 'Contacts', 'Opportunities', 'Calls', 'Documents', 'Cases', 'AOS_Contracts', 'Leads', 'Meetings', 'Notes', 'Campaigns'];
+    }
+
+    /**
      * createSearchParams() builds one search per module, so expect an entry for each index.
      */
     private function expectedParamsPerModule(array $body): array
     {
-        $indexes = ['accounts', 'contacts', 'opportunities', 'calls', 'documents', 'cases', 'aos_contracts', 'leads', 'meetings', 'notes', 'campaigns'];
+        $indexes = array_map('strtolower', $this->searchModules());
 
         return array_map(static fn(string $index): array => ['index' => $index, 'body' => $body], $indexes);
     }
